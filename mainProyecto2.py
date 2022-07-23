@@ -1,5 +1,4 @@
 import numpy as np
-import copy
 
 
 #Retorna el laberinto como lista de listas
@@ -126,43 +125,41 @@ def Algoritmo(amb,profMax):
     # Ambiente, profundidad, valorMinMax, puntajeUser, puntajeBot 
     minMax = [[[amb,0,0,0,0,-1,-1]]] # MAX
 
-    
-
-    
     aux = 0
 
     while (aux < 10):
         
-        for i in range(len(amb)):
-            for j in range(len(amb[i])):
-                if (amb[i][j] == 2):
-                    posMinY = i
-                    posMinX = j
-                elif (amb[i][j] == 4):
-                    posMaxY = i
-                    posMaxX = j
         minMax.append([]) #Nueva profundidad
 
-        print(len(minMax[aux]))
+        print(str(aux) + " " + str(len(minMax[aux])))
         for i in range(len(minMax[aux])):
+            nodoPadre = minMax[aux][i]
+            
+            for i in range(len(nodoPadre[0])):
+                for j in range(len(nodoPadre[0][i])):
+                    if (nodoPadre[0][i][j] == 2):
+                        posMinY = i
+                        posMinX = j
+                    elif (nodoPadre[0][i][j] == 4):
+                        posMaxY = i
+                        posMaxX = j
+
             if aux % 2 == 0:
-                nodoPadre = minMax[aux][i]
                 posibilidades = (Sensor(posMinY,posMinX, nodoPadre[0] )) 
-                for i in range(len(posibilidades)): #[0, 0, 0, 0, 1, 1, 1, 0]
-                    if (posibilidades[i][0] == 1):
-                        newAmb = copy.deepcopy(nodoPadre[0])
-                        posyAct, posxAct = posibilidades[i][1] , posibilidades[i][2]
+                for k in range(len(posibilidades)): #[0, 0, 0, 0, 1, 1, 1, 0]
+                    if (posibilidades[k][0] == 1):
+                        newAmb = [row[:] for row in nodoPadre[0]]
+                        posyAct, posxAct = posibilidades[k][1] , posibilidades[k][2]
                         puntaje = newAmb[posyAct][posxAct]
                         newAmb[posyAct][posxAct] = 2 
                         newAmb[posMinY][posMinX] = 0
                         minMax[aux + 1].append([newAmb, aux + 1, 0, nodoPadre[3] + puntaje, nodoPadre[4], aux, i])
             else:
-                nodoPadre = minMax[aux][i]
                 posibilidades = (Sensor(posMaxY,posMaxX, nodoPadre[0] )) 
-                for i in range(len(posibilidades)): #[0, 0, 0, 0, 1, 1, 1, 0]
-                    if (posibilidades[i][0] == 1):
-                        newAmb = copy.deepcopy(nodoPadre[0])
-                        posyAct, posxAct = posibilidades[i][1] , posibilidades[i][2]
+                for k in range(len(posibilidades)): #[0, 0, 0, 0, 1, 1, 1, 0]
+                    if (posibilidades[k][0] == 1):
+                        newAmb = [row[:] for row in nodoPadre[0]]
+                        posyAct, posxAct = posibilidades[k][1] , posibilidades[k][2]
                         puntaje = newAmb[posyAct][posxAct]
                         newAmb[posyAct][posxAct] = 4 
                         newAmb[posMaxY][posMaxX] = 0
