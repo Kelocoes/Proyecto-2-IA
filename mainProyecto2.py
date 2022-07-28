@@ -127,11 +127,11 @@ def Algoritmo(amb,profMax):
 
     aux = 0
 
-    while (aux < 10):
+    while (aux < profMax ):
         
         minMax.append([]) #Nueva profundidad
 
-        print(str(aux) + " " + str(len(minMax[aux])))
+        # print(str(aux) + " " + str(len(minMax[aux])))
         for i in range(len(minMax[aux])):
             nodoPadre = minMax[aux][i]
             
@@ -144,7 +144,7 @@ def Algoritmo(amb,profMax):
                         posMaxY = i
                         posMaxX = j
 
-            if aux % 2 == 0:
+            if aux % 2 != 0:
                 posibilidades = (Sensor(posMinY,posMinX, nodoPadre[0] )) 
                 for k in range(len(posibilidades)): #[0, 0, 0, 0, 1, 1, 1, 0]
                     if (posibilidades[k][0] == 1):
@@ -166,13 +166,12 @@ def Algoritmo(amb,profMax):
                         minMax[aux + 1].append([newAmb, aux + 1, 0, nodoPadre[3] , nodoPadre[4] + puntaje, aux, i])
         
         aux += 1
+    
+    for i in range(len(minMax)):
+        print("Profundidad: " + str(i) + " Nodos: " + str(len(minMax[i])))
     """
     for i in range(len(minMax)):
-        print("PROFUNDIDAD " + str(i))
-        print(len(minMax[i]))
-
-    for i in range(len(minMax)):
-        print("PROFUNDIDAD " + str(i))
+        print("PROFUNDIDAD " + str(i) + " " + str(len(minMax[i])))
         for j in range(len(minMax[i])):
             nodo = minMax[i][j]
             print(np.array(nodo[0]))
@@ -187,4 +186,4 @@ for i in profundidad:
 
 amb = imp_amb('./ambiente.txt')
 
-Algoritmo(amb,1)
+Algoritmo(amb,2)
