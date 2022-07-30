@@ -47,42 +47,182 @@ def Sensor(posy, posx, tab):
 
     return arr
 
-def Mover(dir,posy,posx):
-    if dir == 0:
-        posyActual = posy-1
-        posxActual = posx-2
-    elif dir == 1:
-        posyActual = posy-2
-        posxActual = posx-1
-    elif dir == 2:
-        posyActual = posy-2
-        posxActual = posx+1
-    elif dir == 3:
-        posyActual = posy-1
-        posxActual = posx+2
-    elif dir == 4:
-        posyActual = posy+1
-        posxActual = posx-2
-    elif dir == 5:
-        posyActual = posy+2
-        posxActual = posx-1
-    elif dir == 6:
-        posyActual = posy+2
-        posxActual = posx+1
-    elif dir == 7:
-        posyActual = posy+1
-        posxActual = posx+2
+def puntajeMYC(maze, posY, posX):
+    manhattanTotal = 0
+    posPosibles = Sensor(posY, posX, maze)
+    arrComidaInmediata = []
+    for i in range(len(maze)):
+        for j in range(len(maze[i])):
+            if (maze[i][j] == 1 or maze[i][j] == 3 or maze[i][j] == 5):
+                manhattanTotal = manhattanTotal + ( abs(i - posY) + abs(j - posX))/3 * maze[i][j]
+                for k in posPosibles:
+                    if k[1] == i and k[2] == j:
+                        arrComidaInmediata.append( (maze[i][j], i, j) )
 
-    return posyActual, posxActual
+    arrComidaInmediata.sort(reverse=True)
+    #print(arrComidaInmediata)
+    if (len(arrComidaInmediata) > 0):
+        return (manhattanTotal, arrComidaInmediata[0][0])
+    else: 
+        return (manhattanTotal, 0)
 
-tab =  [[0,0,0,0,0],
-        [0,0,0,0,0],
-        [0,0,3,0,0],
-        [0,0,0,0,0],
-        [0,0,0,0,0]]
+def fHeuristica(maze, pntMin, pntMax):
+    hMax = 0
+    hMin = 0
 
-#print(Sensor(2,2,tab))
+    mTotalMax = 0
+    pInmediatoMax = 0
 
+    mTotalMin = 0
+    pInmediatoMin = 0
+
+
+    for i in range(len(maze)):
+        for j in range(len(maze[i])):
+            if (maze[i][j] == 2):
+                posMinY = i
+                posMinX = j
+                mTotalMin, pInmediatoMin = puntajeMYC(maze,posMinY,posMinX)
+            elif (maze[i][j] == 4):
+                posMaxY = i
+                posMaxX = j
+                mTotalMax, pInmediatoMax = puntajeMYC(maze,posMaxY,posMaxX)
+
+    #print(pInmediatoMax,mTotalMax)
+    hMax = pInmediatoMax*0.4 + pntMax*0.55 - mTotalMax*0.05
+
+    #print(pInmediatoMin,mTotalMin)
+    hMin = pInmediatoMin*0.4 + pntMin*0.55 - mTotalMin*0.05
+
+    return hMax - hMin
+
+def ganoAlguien(amb):
+    np_amb = np.array(amb)
+
+    if ((np_amb != 0).sum() - 2) == 0:
+        return True
+    else:
+        return False
+
+def Algoritmo(amb,profMax):
+
+    # Ambiente, profundidad, valorMinMax, puntajeUser, puntajeBot, posPadreY, posPadreX, rangoHijos
+    minMax = [[[amb,0,0,0,0,-1,-1, [0,0]]]] # MAX
+
+    aux = 0
+
+    while (aux < profMax ):
+        
+        minMax.append([]) #Nueva profundidad
+
+        print(str(aux) + " " + str(len(minMax[aux])))
+        
+        for posPadreX in range(len(minMax[aux])):
+            nodoPadre = minMax[aux][posPadreX]
+            
+            if not(ganoAlguien(nodoPadre[0])):
+                for i in range(len(nodoPadre[0])):
+                    for j in range(len(nodoPadre[0][i])):
+                        if (nodoPadre[0][i][j] == 2):
+                            posMinY = i
+                            posMinX = j
+                        elif (nodoPadre[0][i][j] == 4):
+                            posMaxY = i
+                            posMaxX = j
+
+                if aux % 2 != 0:
+                    posibilidades = (Sensor(posMinY,posMinX, nodoPadre[0] ))
+                    np_posibilidades = np.array(posibilidades)
+                    minMax[aux][posPadreX][7] = [len(minMax[aux + 1]), len(minMax[aux + 1]) + (np_posibilidades[:,0] != 0).sum() - 1]
+                    for k in range(len(posibilidades)): #[0, 0, 0, 0, 1, 1, 1, 0]
+                        if (posibilidades[k][0] == 1):
+                            newAmb = [row[:] for row in nodoPadre[0]]
+                            posyAct, posxAct = posibilidades[k][1] , posibilidades[k][2]
+                            puntaje = newAmb[posyAct][posxAct]
+                            newAmb[posyAct][posxAct] = 2 
+                            newAmb[posMinY][posMinX] = 0
+                            minMax[aux + 1].append([newAmb, aux + 1, fHeuristica(newAmb, nodoPadre[3] + puntaje, nodoPadre[4]), nodoPadre[3] + puntaje, nodoPadre[4], aux, posPadreX, []])
+                else:
+                    posibilidades = (Sensor(posMaxY,posMaxX, nodoPadre[0] )) 
+                    np_posibilidades = np.array(posibilidades)
+                    minMax[aux][posPadreX][7] = [len(minMax[aux + 1]), len(minMax[aux + 1]) + (np_posibilidades[:,0] != 0).sum() - 1]
+                    for k in range(len(posibilidades)): #[0, 0, 0, 0, 1, 1, 1, 0]
+                        if (posibilidades[k][0] == 1):
+                            newAmb = [row[:] for row in nodoPadre[0]]
+                            posyAct, posxAct = posibilidades[k][1] , posibilidades[k][2]
+                            puntaje = newAmb[posyAct][posxAct]
+                            newAmb[posyAct][posxAct] = 4 
+                            newAmb[posMaxY][posMaxX] = 0
+                            minMax[aux + 1].append([newAmb, aux + 1, fHeuristica(newAmb, nodoPadre[3], nodoPadre[4] + puntaje) , nodoPadre[3] , nodoPadre[4] + puntaje, aux, posPadreX, []]) 
+        
+        aux += 1
+    
+    for i in range(len(minMax)):
+        print("Profundidad: " + str(i) + " Nodos: " + str(len(minMax[i])))
+    
+    
+    """#Para mostra los tableros de los nodos
+    for i in range(len(minMax)):
+        print("PROFUNDIDAD " + str(i) + " " + str(len(minMax[i])))
+        for j in range(len(minMax[i])):
+            nodo = minMax[i][j]
+            print(np.array(nodo[0]))
+    """
+
+    """#Para mostrar los valores minimax de los nodos 
+    for i in range(len(minMax)):
+        print()
+        for j in range(len(minMax[i])):
+            nodo = minMax[i][j]
+            print(nodo[2], end = ' ')    
+    """
+
+    #minMax[2][0][2] = 2
+    #minMax[2][1][2] = 3
+    valHijos = []
+    #Subida de los valores heurísticos o de las hojas hasta el nodo inicial
+    for i in range(len(minMax) - 2, -1, -1):
+        for j in range(len(minMax[i])):
+            if len(minMax[i][j][7]) != 0:
+                valHijos = [minMax[i+1][k][2] for k in range(minMax[i][j][7][0],minMax[i][j][7][1] + 1)]
+
+
+        if len(valHijos) != 0:
+            if (i % 2 != 0): #Si es par es porque toca aplicar min a cada uno de los hijos de los nodos
+                minMax[i][j][2] = min(valHijos)
+            else:
+                minMax[i][j][2] = max(valHijos)
+
+    """#Muestra el arbol minimax solo con los valores 
+    for i in range(len(minMax)):
+        for j in range(len(minMax[i])):
+            nodo = minMax[i][j]
+            print(nodo[2], end = ' ')    
+        print()
+    """
+
+    #Seleccionar la mejor opción para el robot
+    valorRaiz = minMax[0][0][2] 
+    for i in range(len(minMax[1])):
+        if valorRaiz == minMax[1][i][2]:
+            nodoPadre = minMax[1][i]
+            for i in range(len(nodoPadre[0])):
+                for j in range(len(nodoPadre[0][i])):
+                    if (nodoPadre[0][i][j] == 4):
+                        valorMax = [i,j]
+                        break
+            break
+
+    print("Jugada maestra: " + str(valorMax) + " " + str(valorRaiz))
+
+amb = imp_amb('./ambiente.txt')
+
+Algoritmo(amb,8)
+
+
+
+
+"""
 def TurnoUsuario(posyInit, posxInit, posy, posx, tab):
     posibilidades = Sensor(posyInit, posxInit, tab)
 
@@ -102,8 +242,7 @@ def TurnoUsuario(posyInit, posxInit, posy, posx, tab):
     else:
         print("Movimiento erroneo")
         return 0
-
-"""
+        
 print(np.array(tab))
 posyInit = 2
 posxInit = 2
@@ -117,73 +256,5 @@ while(1):
         posxInit = int(posx)
         tab[posyInit][posxInit] = 3
     print(np.array(tab))
+
 """
-
-
-def Algoritmo(amb,profMax):
-
-    # Ambiente, profundidad, valorMinMax, puntajeUser, puntajeBot 
-    minMax = [[[amb,0,0,0,0,-1,-1]]] # MAX
-
-    aux = 0
-
-    while (aux < profMax ):
-        
-        minMax.append([]) #Nueva profundidad
-
-        # print(str(aux) + " " + str(len(minMax[aux])))
-        for i in range(len(minMax[aux])):
-            nodoPadre = minMax[aux][i]
-            
-            for i in range(len(nodoPadre[0])):
-                for j in range(len(nodoPadre[0][i])):
-                    if (nodoPadre[0][i][j] == 2):
-                        posMinY = i
-                        posMinX = j
-                    elif (nodoPadre[0][i][j] == 4):
-                        posMaxY = i
-                        posMaxX = j
-
-            if aux % 2 != 0:
-                posibilidades = (Sensor(posMinY,posMinX, nodoPadre[0] )) 
-                for k in range(len(posibilidades)): #[0, 0, 0, 0, 1, 1, 1, 0]
-                    if (posibilidades[k][0] == 1):
-                        newAmb = [row[:] for row in nodoPadre[0]]
-                        posyAct, posxAct = posibilidades[k][1] , posibilidades[k][2]
-                        puntaje = newAmb[posyAct][posxAct]
-                        newAmb[posyAct][posxAct] = 2 
-                        newAmb[posMinY][posMinX] = 0
-                        minMax[aux + 1].append([newAmb, aux + 1, 0, nodoPadre[3] + puntaje, nodoPadre[4], aux, i])
-            else:
-                posibilidades = (Sensor(posMaxY,posMaxX, nodoPadre[0] )) 
-                for k in range(len(posibilidades)): #[0, 0, 0, 0, 1, 1, 1, 0]
-                    if (posibilidades[k][0] == 1):
-                        newAmb = [row[:] for row in nodoPadre[0]]
-                        posyAct, posxAct = posibilidades[k][1] , posibilidades[k][2]
-                        puntaje = newAmb[posyAct][posxAct]
-                        newAmb[posyAct][posxAct] = 4 
-                        newAmb[posMaxY][posMaxX] = 0
-                        minMax[aux + 1].append([newAmb, aux + 1, 0, nodoPadre[3] , nodoPadre[4] + puntaje, aux, i])
-        
-        aux += 1
-    
-    for i in range(len(minMax)):
-        print("Profundidad: " + str(i) + " Nodos: " + str(len(minMax[i])))
-    """
-    for i in range(len(minMax)):
-        print("PROFUNDIDAD " + str(i) + " " + str(len(minMax[i])))
-        for j in range(len(minMax[i])):
-            nodo = minMax[i][j]
-            print(np.array(nodo[0]))
-    """
-    
-"""
-for i in profundidad:
-    if 0 par?: max
-        posibilidades(min).append
-    if i impar?: min
-"""
-
-amb = imp_amb('./ambiente.txt')
-
-Algoritmo(amb,2)
