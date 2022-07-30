@@ -161,24 +161,10 @@ def Algoritmo(amb,profMax):
         print("Profundidad: " + str(i) + " Nodos: " + str(len(minMax[i])))
     
     
-    """#Para mostra los tableros de los nodos
-    for i in range(len(minMax)):
-        print("PROFUNDIDAD " + str(i) + " " + str(len(minMax[i])))
-        for j in range(len(minMax[i])):
-            nodo = minMax[i][j]
-            print(np.array(nodo[0]))
-    """
+    #Para mostra los tableros de los nodos
 
-    """#Para mostrar los valores minimax de los nodos 
-    for i in range(len(minMax)):
-        print()
-        for j in range(len(minMax[i])):
-            nodo = minMax[i][j]
-            print(nodo[2], end = ' ')    
-    """
+    #Para mostrar los valores minimax de los nodos 
 
-    #minMax[2][0][2] = 2
-    #minMax[2][1][2] = 3
     valHijos = []
     #Subida de los valores heurísticos o de las hojas hasta el nodo inicial
     for i in range(len(minMax) - 2, -1, -1):
@@ -193,13 +179,7 @@ def Algoritmo(amb,profMax):
             else:
                 minMax[i][j][2] = max(valHijos)
 
-    """#Muestra el arbol minimax solo con los valores 
-    for i in range(len(minMax)):
-        for j in range(len(minMax[i])):
-            nodo = minMax[i][j]
-            print(nodo[2], end = ' ')    
-        print()
-    """
+    #Muestra el arbol minimax solo con los valores 
 
     #Seleccionar la mejor opción para el robot
     valorRaiz = minMax[0][0][2] 
