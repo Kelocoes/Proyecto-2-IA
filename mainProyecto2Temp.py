@@ -201,30 +201,3 @@ def Algoritmo(tab,profMax):
 #amb = imp_amb('./ambiente.txt')
 
 #Algoritmo(amb,2)
-
-#Generacion aleatoria del laberinto
-def RNG():
-    maze = []
-    numbers = []
-    for i in range(0,41): numbers.append(0)
-    for i in range(0,14): numbers.append(1)
-    for i in range(0,5): numbers.append(3)
-    for i in range(0,2): numbers.append(5)
-    numbers.append(4)
-    numbers.append(2)
-    #print(len(numbers))
-
-    rm.shuffle(numbers)
-
-    for i in range(0,8):
-        auxRow = []
-        for j in range(0,8):
-            auxRow.append(numbers[0])
-            numbers.pop(0)
-        maze.append(auxRow)
-
-    np.array(maze)
-    np.savetxt('maze.txt', maze, fmt='%d')
-
-    return maze
-            
