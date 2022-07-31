@@ -105,6 +105,12 @@ def Juego():
         else:
             BonitoTab(tab)
     print(p1, p2)
+    if (p1 > p2):
+        print("El ganador fuiste tú!!")
+    elif (p1 < p2):
+        print("El ganador fue el bot :P")
+    else:
+        print("Empate!!")
 
 Juego()
 
