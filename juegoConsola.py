@@ -31,7 +31,7 @@ def BonitoTab(tab):
         print()
     print()
 
-amb = mp2.imp_amb('./ambiente.txt')
+#amb = mp2.imp_amb('./ambiente.txt')
 
 
 def Juego():
@@ -88,16 +88,20 @@ def Juego():
                 p1 += tab[posyInitP][posxInitP] 
             tab[posyInitP][posxInitP] = 2
             BonitoTab(tab)
-            #Turno bot
-            posyNewB, posxNewB = mp2.Algoritmo(tab,dif)
-            tab[posyInitB][posxInitB] = 0
-            posyInitB = posyNewB
-            posxInitB = posxNewB
-            if (tab[posyInitB][posxInitB] == 1 or tab[posyInitB][posxInitB] == 3 or tab[posyInitB][posxInitB] == 5):
-                p2 += tab[posyInitB][posxInitB] 
-            tab[posyNewB][posxNewB] = 4
-            print("El robot movio a la posicion: " + str([posyInitB,posxInitB]))
-            BonitoTab(tab)
+
+            if(not(mp2.ganoAlguien(tab))):
+                #Turno bot
+                posyNewB, posxNewB = mp2.Algoritmo(tab,dif)
+                tab[posyInitB][posxInitB] = 0
+                posyInitB = posyNewB
+                posxInitB = posxNewB
+                if (tab[posyInitB][posxInitB] == 1 or tab[posyInitB][posxInitB] == 3 or tab[posyInitB][posxInitB] == 5):
+                    p2 += tab[posyInitB][posxInitB] 
+                tab[posyNewB][posxNewB] = 4
+                print("El robot movio a la posicion: " + str([posyInitB,posxInitB]))
+                BonitoTab(tab)
+            else:
+                break
         else:
             BonitoTab(tab)
     print(p1, p2)
