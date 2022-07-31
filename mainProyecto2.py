@@ -195,7 +195,7 @@ def Algoritmo(tab,profMax):
                         break
             break
 
-    print("Jugada maestra: " + str(valorMax) + " " + str(valorRaiz))
+    #print("Jugada maestra: " + str(valorMax) + " " + str(valorRaiz))
     return valorMax[0], valorMax[1]
 
 #amb = imp_amb('./ambiente.txt')

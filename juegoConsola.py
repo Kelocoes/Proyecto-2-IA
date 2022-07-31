@@ -20,6 +20,19 @@ def TurnoUsuario(posyInit, posxInit, posy, posx, tab):
         print("Movimiento erroneo")
         return 0
 
+def BonitoTab(tab):
+    print()
+    print("  y/x  0 1 2 3 4 5 6 7")
+    print()
+    for i in range(len(tab)):
+        print("", end  = "   " + str(i) + "   ")
+        for j in range(len(tab[i])):
+            print(tab[i][j], end = " ")
+        print()
+    print()
+
+amb = mp2.imp_amb('./ambiente.txt')
+
 
 def Juego():
     tab = mp2.RNG()
@@ -48,7 +61,7 @@ def Juego():
         dif = 6
     
     print("Este es el tablero generado!")
-    print(np.array(tab))
+    BonitoTab(tab)
 
     print("Comienza el bot!")
     
@@ -58,7 +71,7 @@ def Juego():
     posxInitB = posxNewB
     tab[posyNewB][posxNewB] = 4
     print("El robot movio a la posicion: " + str([posyNewB,posxNewB]))
-    print(np.array(tab))
+    BonitoTab(tab)
 
     p1 = 0
     p2 = 0
@@ -74,7 +87,7 @@ def Juego():
             if (tab[posyInitP][posxInitP] == 1 or tab[posyInitP][posxInitP] == 3 or tab[posyInitP][posxInitP] == 5):
                 p1 += tab[posyInitP][posxInitP] 
             tab[posyInitP][posxInitP] = 2
-            print(np.array(tab))
+            BonitoTab(tab)
             #Turno bot
             posyNewB, posxNewB = mp2.Algoritmo(tab,dif)
             tab[posyInitB][posxInitB] = 0
@@ -84,15 +97,10 @@ def Juego():
                 p2 += tab[posyInitB][posxInitB] 
             tab[posyNewB][posxNewB] = 4
             print("El robot movio a la posicion: " + str([posyInitB,posxInitB]))
-            print(np.array(tab))
+            BonitoTab(tab)
         else:
-            print(np.array(tab))
+            BonitoTab(tab)
     print(p1, p2)
+
 Juego()
 
-
-def BonitoTab(tab):
-    for i in range(tab):
-        for j in range(tab[i]):
-            print(tab[i][j], end = " ")
-        print()
