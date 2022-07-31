@@ -153,7 +153,7 @@ def Algoritmo(amb,profMax):
                             puntaje = newAmb[posyAct][posxAct]
                             newAmb[posyAct][posxAct] = 4 
                             newAmb[posMaxY][posMaxX] = 0
-                            minMax[aux + 1].append([newAmb, aux + 1, fHeuristica(newAmb, nodoPadre[3], nodoPadre[4] + puntaje) , nodoPadre[3] , nodoPadre[4] + puntaje, aux, posPadreX, []]) 
+                            minMax[aux + 1].append([newAmb, aux + 1, fHeuristica(newAmb, nodoPadre[3], nodoPadre[4] + puntaje) , nodoPadre[3] , nodoPadre[4] + puntaje, aux, posPadreX, []])
         
         aux += 1
     
@@ -172,14 +172,18 @@ def Algoritmo(amb,profMax):
             if len(minMax[i][j][7]) != 0:
                 valHijos = [minMax[i+1][k][2] for k in range(minMax[i][j][7][0],minMax[i][j][7][1] + 1)]
 
-
-        if len(valHijos) != 0:
-            if (i % 2 != 0): #Si es par es porque toca aplicar min a cada uno de los hijos de los nodos
-                minMax[i][j][2] = min(valHijos)
-            else:
-                minMax[i][j][2] = max(valHijos)
+            if len(valHijos) != 0:
+                if (i % 2 != 0): #Si es par es porque toca aplicar min a cada uno de los hijos de los nodos
+                    minMax[i][j][2] = min(valHijos)
+                else:
+                    minMax[i][j][2] = max(valHijos)
 
     #Muestra el arbol minimax solo con los valores 
+    for i in range(len(minMax)):
+        for j in range(len(minMax[i])):
+            nodo = minMax[i][j]
+            print(nodo[2], end = ' ')    
+        print()
 
     #Seleccionar la mejor opción para el robot
     valorRaiz = minMax[0][0][2] 
@@ -197,7 +201,7 @@ def Algoritmo(amb,profMax):
 
 amb = imp_amb('./ambiente.txt')
 
-Algoritmo(amb,8)
+Algoritmo(amb,2)
 
 
 
