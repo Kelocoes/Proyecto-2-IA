@@ -1,7 +1,6 @@
 import mainProyecto2 as mp2
 import numpy as np
 
-
 def TurnoUsuario(posyInit, posxInit, posy, posx, tab):
     posibilidades = mp2.Sensor(posyInit, posxInit, tab)
 
