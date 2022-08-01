@@ -8,8 +8,8 @@ import time
 ## CONFIGURACION DE LA VENTANA Y CASILLAS ####################################
 
 dif = 0
-#tab = mp2.RNG()
-tab = mp2.imp_amb('./maze.txt')
+tab = mp2.RNG()
+#tab = mp2.imp_amb('./maze.txt')
 WIDTH = HEIGHT = 512
 WIDTHSCR = 750
 DIMENSION = len(tab)
