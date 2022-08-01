@@ -3,11 +3,13 @@ import pygame as p
 import mainProyecto2 as mp2
 from Gameover import draw_text
 from Gameover import main_menu
+import time
 ##############################################################################
 ## CONFIGURACION DE LA VENTANA Y CASILLAS ####################################
 
 dif = 0
-tab = mp2.RNG()
+#tab = mp2.RNG()
+tab = mp2.imp_amb('./maze.txt')
 WIDTH = HEIGHT = 512
 WIDTHSCR = 750
 DIMENSION = len(tab)
@@ -48,7 +50,9 @@ def dibujarObjetos(screen):
 def dibujarLateral(screen, p1, p2, turno):
     font = p.font.SysFont(None, 30)
     draw_text('S T A T U S', font, p.Color('white'), screen, 570, 50)
-    if (turno == 1):
+    if (turno == 0):
+        draw_text('Estado inicial', font, p.Color('white'), screen, 540, 100)
+    elif (turno == 1):
         draw_text('Turno del bot', font, p.Color('white'), screen, 540, 100)
         screen.blit(IMAGES[str(4)], p.Rect(600, 160, 50, 50))
     else: 
@@ -104,37 +108,44 @@ def general():
             posPosibles = Iluminate(posyInitP, posxInitP, screen)
             turno = 3
         ## Turno del jugador: Depende de evento del mouse ->
-        for e in p.event.get():
-            if e.type == p.QUIT:
-                running: False
-                p.quit()
-                exit()
-            elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos() ## (x,y)
-                posx = location[0] // CAS_TAM
-                posy = location[1] // CAS_TAM
-                
-                if [posy, posx] in posPosibles:
-                    print('Posible!')
-                    ## Se realiza el respectivo movimiento
-                    tab[posyInitP][posxInitP] = 0
-                    posyInitP = int(posy)
-                    posxInitP = int(posx)
-                    if (tab[posyInitP][posxInitP] == 1 or tab[posyInitP][posxInitP] == 3 or tab[posyInitP][posxInitP] == 5):
-                        p1 += tab[posyInitP][posxInitP] 
-                    tab[posyInitP][posxInitP] = 2
-                    posPosibles = [] ## Se resetea posPosibles para poder desmarcar aquellas casillas resaltadas
-                    if (mp2.ganoAlguien(tab)):
-                        running= False
-                        break
-                    else: 
-                        turno = 1
-                else: 
-                    print('No posible')
+        elif (turno == 3):
+            for e in p.event.get():
+                if e.type == p.QUIT:
+                    running: False
+                    p.quit()
+                    exit()
+                elif e.type == p.MOUSEBUTTONDOWN:
+                    location = p.mouse.get_pos() ## (x,y)
+                    posx = location[0] // CAS_TAM
+                    posy = location[1] // CAS_TAM
+                    
+                    if [posy, posx] in posPosibles:
+                        #print('Posible!')
+                        ## Se realiza el respectivo movimiento
+                        tab[posyInitP][posxInitP] = 0
+                        posyInitP = int(posy)
+                        posxInitP = int(posx)
+                        if (tab[posyInitP][posxInitP] == 1 or tab[posyInitP][posxInitP] == 3 or tab[posyInitP][posxInitP] == 5):
+                            p1 += tab[posyInitP][posxInitP] 
+                        tab[posyInitP][posxInitP] = 2
+                        posPosibles = [] ## Se resetea posPosibles para poder desmarcar aquellas casillas resaltadas
+                        if (mp2.ganoAlguien(tab)):
+                            running= False
+                            break
+                        else: 
+                            turno = 1
+                    #else: 
+                        #print('No posible')
             
         clock.tick(MAX_FPS)
         dibujarGameStatus(screen, posPosibles, p1, p2, turno)
-        p.display.flip()    
+        if (turno == 0):
+            dibujarGameStatus(screen, posPosibles, p1, p2, turno)
+            p.display.flip()   
+            p.time.wait(5000)
+            #print("hola")
+            turno = 1 
+        p.display.flip()   
     
     ##print(p1, p2)
     p.init()
@@ -169,7 +180,7 @@ def Comenzar():
         dif = 4
     else:
         dif = 6
-    return posyInitP, posxInitP, posyInitB, posxInitB, dif, 1
+    return posyInitP, posxInitP, posyInitB, posxInitB, dif, 0
 
 def Iluminate(posyInit, posxInit, screen): 
 
